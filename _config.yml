@@ -110,7 +110,7 @@ customLinks:
 #comment config
 disqus:
   config: true
-  id: yuanjunsc
+  id: yuanjuncs
 
 
 #################################### global configure #######################################
