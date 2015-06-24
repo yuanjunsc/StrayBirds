@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 排列组合
+title: Subsets and Permutation
 category: 刷题
 comments: true
 ---
