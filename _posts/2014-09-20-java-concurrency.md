@@ -1,7 +1,7 @@
 ---
 layout: post
 title: Java 中的并发
-category: 技术
+category: 编程
 comments: true
 ---
 
