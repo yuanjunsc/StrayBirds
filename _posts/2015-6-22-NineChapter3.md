@@ -115,14 +115,13 @@ NineChapter lesson3
 
 
 
-1.SearchRange        搜索区间
+1.Maximum Depth of Binary Tree       求二叉树的最大高度
 
-链接：http://www.lintcode.com/zh-cn/problem/search-for-a-range/
+链接：http://www.lintcode.com/zh-cn/problem/maximum-depth-of-binary-tree/
 
 
 
-![_config.yml]({{ site.baseurl }}/images/NineChapter/Lesson2/SearchRange.png)
-
+![_config.yml]({{ site.baseurl }}/images/NineChapter/Lesson3/MaximumDepth.png)
 
 
 
@@ -130,338 +129,337 @@ NineChapter lesson3
 题目分析：
 
 
-(1)数组为排序数组，元素可以重复：
+使用分治法---最大高度 = max(左子树最大高度，右子树最大高度) + 1 (root节点)
 
-(2)寻找target的range范围即找到target在数组中的 first position & last position.
 
-(3)first position 和 last position 程序大体相同，只不过在 A[mid] == target时：
 
-first:  end = mid
-
-last:   start = mid
+程序:
     
-
-
-算法思路：
-
-先用二分法找到target的 first position 作为 bound[0]，没有直接返回[-1,-1]
-再用二分法找到target的 last position 作为 bound[1], 返回bound.
-
-
-    
-
-
-2.Search Insert Position        
-
-
-链接：http://www.lintcode.com/zh-cn/problem/search-insert-position/
-
-
-![_config.yml]({{ site.baseurl }}/images/NineChapter/Lesson2/Search Insert Position .png)
-
-
-
-
-题目分析：
-
-(1)数组为排序数组，无重复元素
-
-(2)如果在数组中直接找到target，则直接return A[mid]
-
-(3)否则就证明数组中不存在target，但此时的start和end已经是最逼近target的值了：
-
-判断start和end哪个更接近target，因为数组是递增顺序：
-
-因此先判断start：
-
-    if (A[start] >= target) {
-            return start;
-        } 
-    else if (A[end] >= target) {
-            return end;
-        } 
-    else {
-            return end + 1;
-        }
-
-
-
-
-算法思路：
-
-用二分法查找target，因为无重复元素，所以找到后直接return即可（相当于找any position)，
-没找到时，用start和end逼近，看哪个更接近。
-
-
-
-
-
-
-
-
-
-
-
-3.Search a 2D Matrix           搜索二维矩阵
-
-
-链接：http://www.lintcode.com/zh-cn/problem/search-a-2d-matrix/
-
-
-![_config.yml]({{ site.baseurl }}/images/NineChapter/Lesson2/SearchMatrix.png)
-
-
-
-
-
-题目分析：
-
-
-
-
-(1)每一行元素都是递增顺序，且下一行元素都大于上一行
-
-(2)O(log(n) + log(m)) 时间复杂度：
-
-一定是使用了两次二分法来实现，先二分找出所在行，再在该行中用二分找出所在列
-
-
-
-
-
-4.Search a 2D Matrix II          搜索二维矩阵
-
-
-链接：http://www.lintcode.com/zh-cn/problem/search-a-2d-matrix-ii/
-
-
-
-
-![_config.yml]({{ site.baseurl }}/images/NineChapter/Lesson2/SearchMatrix2.png)
-
-
-
-
-题目分析：
-
-(1)各行的元素都为递增顺序，各列的元素也都是递增顺序（无重复元素）
-
-(2)选取矩阵的左下角为起点进行搜索
-
-(3)算法步骤：
-
-在每一行中都进行二分法查找：
-
-如果该行中有target,则计数加一，跳到target上一行中进行搜索
-
-如果该行没有target，则在start和end中选择接近target的数，并跳到相应的上一行进行搜索
-
-
-
-如下图所示：
-
-
-![_config.yml]({{ site.baseurl }}/images/NineChapter/Lesson2/Search.png)
-
-
-
-
-
-
-
-程序：
-
-    public static int searchMatrix(int[][] matrix, int target) {
-
-        if(matrix.length == 0){
+    public int maxDepth(TreeNode root) {
+        // write your code here
+        
+        if(root == null){
             return 0;
         }
+        
+        int left = maxDepth(root.left);
+        int right = maxDepth(root.right);
 
-        int num = 0;
-        int x,y;
-        int x1 = matrix.length-1;
-        int y1 = 0;
+        return Math.max(left, right) + 1;
+  
+    }
+
+
+
+
+
+
+2.MinDepth       求二叉树的最小高度
+
+链接：http://www.lintcode.com/zh-cn/problem/minimum-depth-of-binary-tree/
+
+
+
+![_config.yml]({{ site.baseurl }}/images/NineChapter/Lesson3/MinDepth.png)
+
+
+
+
+题目分析：
+
+
+(1)同样考虑使用分治法---最小高度 = min(左子树最小高度，右子树最小高度) + 1 (root节点)
+
+
+(2)与求最大高度不同的是，当节点只有一个儿子时，如果只是单纯的求Min(left,right)，那么一定返回零，
+
+所以，要在返回最大高度的基础上对这种情况进行处理。即只有一个儿子时直接返回，另一个高度加一。
+
+
+
+程序：
+
+
+    public int minDepth(TreeNode root) {
+        // write your code here
+        if(root == null){
+            return 0;
+        }
         
-        int start = y1;
-        int end = matrix[x1].length-1;
-        int mid;
-        int flag = 0;
-        
-        while(x1 >=0 && y1 <= matrix[x1].length-1){
-            end = matrix[x1].length-1;
+        if(root.left == null && root.right == null){     //遇到叶子节点时，直接返回1
+            return 1;
+        }
             
-            while(start + 1 < end && x1>=0){
+        int left = minDepth(root.left);     //看成已经求得此节点左右子树的最小高度
+        int right = minDepth(root.right);
+            
+        if(root.left == null){   //如果此节点左子树为空，那么此节点最小高度为右子树最小高度加1
+            return right + 1;
+        }
+        if(root.right == null){  //如果此节点右子树为空，那么此节点最小高度为左子树最小高度加1
+            return left + 1;
+        }
 
-                mid = start + (end - start) / 2;
-                
-                if(matrix[x1][mid] == target){
-                    num++;
-                    x1--;
-                    y1 = mid;
-                    flag = 1;
-                    continue;
+        return Math.min(right,left) + 1;   //如果此节点左右子树都存在，那么就返回左右子树最小高度加1
+        
+    }
+
+
+
+
+3.Binary Tree Maximum Path Sum       求二叉树的最大路径和
+
+链接：http://www.lintcode.com/en/problem/binary-tree-maximum-path-sum/
+
+
+
+![_config.yml]({{ site.baseurl }}/images/NineChapter/Lesson3/MaximumPath.png)
+
+
+
+题目分析：
+
+
+
+(1)首先同样考虑使用分治法，即最大路径和 = 最大左子树路径和 + 最大右子树路径和 + root.val
+
+(2)考虑其他情况，因为各点的值存在正负，所以综合考虑有如下情况：
+
+
+最大路径经过左右子树和root
+
+最大路径在左子树
+
+最大路径在右子树。。。。。
+
+(3)即二叉树中有两种路径，一种穿过左右子树和root，一种只在一个子树中
+
+singlePath: 从root往下走到任意点的最大路径，这条路径可以不包含任何点
+
+maxPath: 从树中任意到任意点的最大路径，这条路径至少包含一个点（也就是root）
+
+
+(4)最重要的一点就是这道题我只是大致弄明白，所以先默写并背诵全文
+
+
+
+
+程序：
+
+
+
+    class ResultType{
+        int singlePath,maxPath;
+        ResultType(int singlePath,maxPath){
+
+        this.singlePath = singlePath;
+        this.maxPath = maxPath;
+
+        }
+    }
+
+
+    public ResultType helper(TreeNode root){
+
+        if(root == null){
+            return new ResultType(0,Integer.MIN_VALUE);
+        }
+
+        ResultType left =  helper(root.left);
+        ResultType right = helper(root.right);
+
+        int singlePath = Math.max(left.singlePath,right.singlePath) + root.val;
+        singlePath = Math.max(0,singlePath);
+
+        int maxPath = Math.max(left.maxPath,right.maxPath);
+        maxPath = Math.max(maxPath,left.singlePath + right.singlePath + root.val);
+
+        return new ResultType(singlePath,maxPath);
+
+    }
+
+    public int maxPathSum(TreeNode root){
+
+        ResultType result = helper(root);
+
+        return result.maxPath;
+    }
+
+
+
+
+4.Lowest Common Ancestor---最近公共祖先
+
+
+链接：http://www.lintcode.com/zh-cn/problem/lowest-common-ancestor/
+
+
+
+![_config.yml]({{ site.baseurl }}/images/NineChapter/Lesson3/lowestCommonAncestor.png)
+
+
+
+5.层次遍历 = BFS
+
+
+
+6.二叉树的锯齿形层次遍历
+
+
+
+链接：http://www.lintcode.com/zh-cn/problem/lowest-common-ancestor/
+
+
+
+![_config.yml]({{ site.baseurl }}/images/NineChapter/Lesson3/zigzagLevelOrder.png)
+
+
+
+
+
+题目分析：
+
+
+定义两个stack，curr和next：
+
+每次从stack中读出栈顶元素，非空时，按head.---head.right，head.right---head.left顺序放入next
+
+交换curr和next,循环进行。
+
+
+
+
+
+程序：
+
+
+    public ArrayList<ArrayList<Integer>> zigzagLevelOrder(TreeNode root) {
+        // write your code here
+        
+        ArrayList<ArrayList<Integer>> result = new ArrayList<ArrayList<Integer>> ();
+        
+        
+        if(root == null){
+            return result;
+        }
+        
+        Queue<TreeNode> queue = new LinkedList<TreeNode>();
+        queue.offer(root);
+        
+        while(!queue.isEmpty()){
+            
+            ArrayList list = new ArrayList();
+            int size = queue.size();
+            
+            for(int i = 0; i < size; i++){
+                TreeNode head = queue.poll();
+                list.add(head.val);
+                if(head.left != null && head.right != null){
+                    
+                    if(k == 0){
+                        
+                        if(head.right != null){
+                            queue.offer(head.right);
+                        }
+                        if(head.left != null){
+                            queue.offer(head.left);
+                        }
+                        k = 1;
+                    }
+                    
+                    else{
+                        
+                        if(head.left != null){
+                            queue.offer(head.left);
+                        }
+                        if(head.right != null){
+                            queue.offer(head.right);
+                        }
+                        k = 0;
+                        
+                    }
+                    
                 }
                 
-                else if(matrix[x1][mid] < target){
-                    start = mid;
-                }
                 else{
-                    end = mid;
+                    
+                    if(head.left != null){
+                        queue.offer(head.left);
+                    }
+                    if(head.right != null){
+                        queue.offer(head.right);
+                    }
+                }  
+            }
+            result.add(list);     
+        }
+        return result;
+    }
+
+
+
+P.S
+
+我直接用levelorder的程序，然后用一个全局变量控制每次的输出次序，一只报有问题，是这种输入情况：
+
+
+{1,2,3,4,#,#,5,#,#,6,7,#,#,#,8}
+
+
+
+7.Validate Binary Search Tree
+
+
+如果二叉树是二叉查找树，那么用中序遍历一定会得到一个递增数组，照此判断即可
+
+
+
+
+
+8.在二叉查找树中插入节点
+
+链接：http://www.lintcode.com/zh-cn/problem/insert-node-in-a-binary-search-tree/
+
+
+![_config.yml]({{ site.baseurl }}/images/NineChapter/Lesson3/insertNode.png)
+
+
+
+
+题目分析：
+
+二叉查找树的元素有一定排列顺序，所以每次按照元素值最接近的位置，生成新节点
+
+
+
+
+
+程序：
+
+    if(root == null){
+            return node;
+        }
+        
+        TreeNode n = root;
+        while(n != null){
+            if(node.val > n.val){
+                if(n.right == null){
+                    n.right = node;
+                    break;
                 }
-                
-            }
-            
-            
-            if(flag == 1){
-                flag = 0;
-                continue;
-            }
-            
-            
-            if(matrix[x1][start] == target){
-                num++;
-                x1--;
-                y1 = start;
-                
-            }
-            
-            else if(matrix[x1][start] > target){
-                x1--;
-                y1 = start;
-            }
-            
-            else if(matrix[x1][end] == target){
-                num++;
-                x1--;
-                y1 = end;
-                
+                n = n.right;
             }
             else{
-                x1--;
-                y1 = end;
-            }
-
-        }
-        
-        return num;
-    }
-
-
-
-
-
-5.Find Peak Element     找出一组数据元素中的任意一个峰值点
-
-
-链接：http://www.lintcode.com/zh-cn/problem/find-peak-element/
-
-
-![_config.yml]({{ site.baseurl }}/images/NineChapter/Lesson2/SearchPeak.png)
-
-
-
-
-题目分析：
-
-
-(1)峰值的特点就是该点的值大于前一个点和后一个点
-
-(2)三个点间的曲线有四种情况：递增，递减，波峰，波谷
-
-(3)用start和end区间去逼近峰值点，最后返回这两点中较大的那个
-
-
-
-程序：
-
-    public int findPeak(int[] A) {
-     
-        int start = 1, end = A.length-2; // 1.答案在之间，2.不会出界 
-
-        while(start + 1 <  end) {
-            int mid = (start + end) / 2;
-            if(A[mid] < A[mid - 1]) {
-                end = mid;
-            } else if(A[mid] < A[mid + 1]) {
-                start = mid;
-            } else {
-                end = mid;
-            }
-        }
-        if(A[start] < A[end]) {
-            return end;
-        } else { 
-            return start;
-        }
-        
-        
-    }
-
-
-
-
-6.Search in Rotated Sorted Array     在旋转数组中进行搜索
-
-
-链接：http://www.lintcode.com/zh-cn/problem/search-in-rotated-sorted-array/
-
-
-![_config.yml]({{ site.baseurl }}/images/NineChapter/Lesson2/xuanzhuan.png)
-
-
-
-
-题目分析：
-
-(1)数组中无重复元素，且最初为排序数组
-
-(2)我是把旋转后的数组大致看为前后断开分别递增的两部分，所以和普通二分法查找不同的是：
-
-在确定区间时，不能直接拿A[i]和target进行比较，需要拿区间端点进行辅助比较，
-
-确定不同的单调区间：
-
-
-
-
-程序：
-
-
-    public int search(int[] A, int target) {
-        int start = 0;
-        int end = A.length - 1;
-        int mid;
-        
-        while (start + 1 < end) {
-            mid = start + (end - start) / 2;
-            if (A[mid] == target) {         //无重复元素，所以直接找到any position返回即可
-                return mid;
-            }
-            if (A[start] < A[mid]) {        //确定单调区间
-                // situation 1, red line
-                if (A[start] <= target && target <= A[mid]) {
-                    end = mid;
-                } else {
-                    start = mid;
+                if(n.left == null){
+                    n.left = node;
+                    break; 
                 }
-            } else {
-                // situation 2, green line
-                if (A[mid] <= target && target <= A[end]) {
-                    start = mid;
-                } else {
-                    end = mid;
-                }
+                n = n.left;
             }
-        } // while
-        
-        if (A[start] == target) {
-            return start;
         }
-        if (A[end] == target) {
-            return end;
-        }
-        return -1;
+        return root;
     }
+
 
 
 
